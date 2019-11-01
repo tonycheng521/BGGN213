@@ -1,2 +1,2 @@
-# bggn213
-classwork from bggn213
+# Bioinformatics Class
+My work from bggn213 class at UCSD
