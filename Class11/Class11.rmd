@@ -1,0 +1,67 @@
+---
+title: "Untitled"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+summary = read.csv("Data Export Summary.csv")
+summary
+```
+
+```{r}
+total_protein = sum(summary["Proteins"])
+x_ray_percent = summary[1,2] / total_protein *100
+electron_micro_percent = summary[3,2] / total_protein *100
+
+
+```
+
+x-ray percentage is `r x_ray_percent` % 
+
+```{r}
+sum(summary$Total)
+```
+```{r}
+ans = summary$Total/sum(summary$Total) * 100
+names(ans) = summary$Experimental.Method
+round(ans,2)
+```
+
+What propotions are protein?
+```{r}
+round(sum(summary$Proteins) / sum(summary$Total),2)
+```
+
+```{r}
+library(bio3d)
+pdb = read.pdb("1hsg")
+pdb
+```
+```{r}
+aa321(pdb$atom[,"resid"])
+```
+```{r}
+protein_select = atom.select(pdb,"protein", value = TRUE)
+write.pdb(protein_select, "protein_select.pdb")
+
+```
+
+```{r}
+ligand_select = atom.select(pdb, "ligand", value = TRUE)
+write.pdb(ligand_select, "ligand_select.pdb")
+ligand_select
+```
+
+```{r}
+#library(bio3d.view)
+#view(ligand_select)
+```
+
+```{r}
+modes
+```
+
