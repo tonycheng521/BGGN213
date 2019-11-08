@@ -2,7 +2,7 @@
 title: "Class 6 are functions!"
 author: "Pin-Chung (Tony) Cheng"
 date: "10/18/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
