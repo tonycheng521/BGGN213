@@ -34,5 +34,6 @@ write.pdb(ligand, file="1hsg_ligand.pdb")
 ```{r}
 protein = atom.select(pdb, string="protein", value=TRUE)
 write.pdb(protein, file="1hsg_protein.pdb")
+
 ```
 
