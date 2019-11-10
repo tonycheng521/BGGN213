@@ -37,3 +37,10 @@ write.pdb(protein, file="1hsg_protein.pdb")
 
 ```
 
+
+## Process docking results
+```{r}
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
