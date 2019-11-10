@@ -17,7 +17,7 @@ x <- cbind(x=tmp, y=rev(tmp))
 plot(x) 
 ```
 
-Use kmeans function here
+Use kmeans function here!!
 ```{r}
 k = kmeans(x, centers=2, nstart = 20)
 ```
