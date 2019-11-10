@@ -10,14 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-# K mean example
+# K mean example 
 ```{r}
 tmp <- c(rnorm(30,-3), rnorm(30,3))
 x <- cbind(x=tmp, y=rev(tmp))
-plot(x)
+plot(x) 
 ```
 
-Use kmeans function
+Use kmeans function here
 ```{r}
 k = kmeans(x, centers=2, nstart = 20)
 ```
