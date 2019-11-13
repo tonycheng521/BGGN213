@@ -1,0 +1,235 @@
+---
+title: "Class14"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Setup Bioconductor DESeq2
+
+# Do not run this code 
+```{r eval=FALSE} 
+install.packages("BiocManager")
+BiocManager::install()
+
+BiocManager::install("DESeq2")
+```
+
+## Data for today's class
+
+```{r}
+counts = read.csv("data/airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata = read.csv("data/airway_metadata.csv", stringsAsFactors = FALSE)
+# genes are not factors (categorical)
+```
+
+How many genes do we have in the dataset?
+```{r}
+nrow(counts)
+```
+
+How many experiments?
+```{r}
+ncol(counts) - 1
+```
+
+
+# minus 1
+```{r}
+colnames(counts)[-1] 
+```
+
+```{r}
+metadata$id
+```
+
+Make sure experiment names match in counts data and metadata 
+```{r}
+all(colnames(counts)[-1] == metadata$id)
+```
+
+Find the control id
+```{r}
+# metadata[metadata[,"dex"] == "control"]
+# need to specify both row and col for subset
+control.id = metadata[metadata$dex == "control", ]$id
+```
+
+Focus on the counts for control experiments
+```{r}
+head(counts[,control.id])
+```
+
+Mean counts for control exps
+```{r}
+control.mean = rowSums(counts[,control.id])/length(control.id)
+names(control.mean) = counts$ensgene
+```
+
+# Do the same for treatment
+
+
+```{r}
+treated.id = metadata[metadata$dex == "treated", ]$id
+treated.mean = rowSums(counts[,treated.id])/length(treated.id)
+names(treated.mean) = counts$ensgene
+```
+
+Let's store them together
+```{r}
+meancounts = data.frame(control.mean, treated.mean)
+```
+
+Plot control vs treatment
+```{r}
+plot(meancounts$control.mean, meancounts$treated.mean)
+```
+
+Plot on log scale
+```{r}
+plot(meancounts$control.mean, meancounts$treated.mean, log="xy")
+```
+## Fold change in log
+```{r}
+meancounts$log2fc <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts)
+```
+
+Remove zero
+```{r}
+zero.vals <- which(meancounts[,1:2]==0, arr.ind=TRUE)
+```
+
+Test removing zero with test dataframe
+```{r}
+x = data.frame(happy=c(4,2,0,0), sad=c(2,0,0,1))
+```
+
+```{r}
+x == 0
+```
+
+```{r}
+which(x==0, arr.ind=T)
+```
+
+```{r}
+which(x==0, arr.ind=T)[,1]
+```
+
+```{r}
+indx = unique(which(x==0, arr.ind=T)[,1])
+#arr.ind > make into array of row and col, not just a vector going thru columns
+
+# select row with zero
+x[indx,]
+```
+
+Select row with no zeros
+```{r}
+x[-indx,]
+```
+
+## Continure where we left off and select data with no zero
+```{r}
+to.rm = which(meancounts[,1:2]==0, arr.ind=TRUE)[,1]
+mycounts = meancounts[-to.rm,]
+head(mycounts)
+```
+
+How many genes do I have left after removing rows with zero?
+```{r}
+nrow(mycounts)
+```
+
+```{r}
+up.ind <- mycounts$log2fc > 2
+down.ind <- mycounts$log2fc < (-2)
+```
+
+Use sum to count TRUE and FALSE (0 and 1)
+```{r}
+sum(up.ind)
+sum(down.ind)
+```
+
+## Add annotation, install and load packages
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+```
+
+
+See what is available in org.Hs
+```{r}
+columns(org.Hs.eg.db)
+```
+
+
+
+Use mapIds to add annotation, specify key - column
+```{r}
+mycounts$symbol <- mapIds(org.Hs.eg.db,
+                     keys=row.names(mycounts), # Our genenames
+                     keytype="ENSEMBL",        # The format of our genenames
+                     column="SYMBOL",          # The new format we want to add
+                     multiVals="first")
+```
+
+```{r}
+head(mycounts)
+```
+
+# DESeq2 analysis
+```{r}
+library(DESeq2)
+```
+
+
+Setup our object for DESeq analysis
+```{r}
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+```
+
+```{r}
+dds = DESeq(dds)
+```
+
+```{r}
+res = results(dds)
+res
+```
+
+# Volcano plot
+```{r}
+plot(res$log2FoldChange, res$padj)
+```
+
+```{r}
+plot(res$log2FoldChange, -log(res$padj))
+```
+
+Color our plot
+```{r}
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "red" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "blue"
+
+# Volcano plot with custom colors 
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=mycols, ylab="-Log(P-value)", xlab="Log2(FoldChange)" )
+
+# Cut-off lines
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.1), col="gray", lty=2)
+```
+
