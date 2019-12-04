@@ -1,4 +1,4 @@
-# Bioinformatics Class
+# Pin-Chung (Tony) Cheng GitHub Pages
 My work from [bggn213 class at UC San Diego](https://bioboot.github.io/bggn213_F19/lectures/#10).
 
 Contents:
