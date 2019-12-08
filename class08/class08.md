@@ -1,7 +1,7 @@
 ---
 title: "class08_RMD"
 author: "Pin-Chung (Tony) Cheng"
-date: "10/25/2019"
+date: "2019-10-25"
 output: html_document
 ---
 
