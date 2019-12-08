@@ -1,7 +1,7 @@
 ---
 title: "Class 6 are functions!"
 author: "Pin-Chung (Tony) Cheng"
-date: "10/18/2019"
+date: "2019-10-18"
 output: github_document
 ---
 
