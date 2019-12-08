@@ -2,7 +2,7 @@
 title: "Class 6 are functions!"
 author: "Pin-Chung (Tony) Cheng"
 date: "10/18/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -54,7 +54,7 @@ rescale2 = function(y){
 rescale(1:10)
 rescale2(1:10)
 rescale2(c(1,2,NA,3,10))
-rescale2(c(1,10,"string"))
+
 ```
 ```{r}
 rescale3 <- function(x, na.rm=TRUE, plot=FALSE) {
